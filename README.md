@@ -23,7 +23,7 @@ El("my-element", {
 
 "Custom Elements are coming, Custom Elements are coming".
 
-For 3+ years we have listened to the "experts" telling us that ES6 is coming... but it's not. Even when ES6 does come we do we do about old browsers? We will have to:
+For 3+ years we have listened to the "experts" telling us that ES6 is coming... but it's not. Even when ES6 does come... what do we do about old browsers? We will have to:
 
 1. Write our fancy code in ES6.
 2. Compile to ES5 using Babel
@@ -31,7 +31,9 @@ For 3+ years we have listened to the "experts" telling us that ES6 is coming... 
 4. If it does then serve it the ES6.
 5. if it doesn't then serve it the larger ES5 Babelified code.
 
-...Ain't nobody got time for that. El.JS can be used in all browsers right now, no more waiting.
+...Ain't nobody got time for that.
+
+El.JS can be used in all browsers right now, no more waiting.
 
 ##### Small
 
@@ -52,7 +54,7 @@ Declare a custom element by passing the tag name and options into `El(tag, optio
 ```javascript
 El("my-element", {
   attached: function(){
-  	// The newly attacked element is the context, aka "this"
+    // The newly attacked element is the context, aka "this"
     console.log(this);
   }
 })
@@ -95,26 +97,26 @@ When the element is removed from the DOM the `detached` function will be called 
 El("my-element", {
   /* ... */
   watch: { // All properties are optional
-    attributes: "class name",
+    attributes: ["class", "info"],
     children: true,
     text: true
   }
 });
 ```
 
-The `watch` property is an object that describes that changes should trigger the `changed` function.
+The `watch` property is an object that describes what changes should trigger the `changed` function.
 
 - `attributes`
-    - `false` = Do not watch for changes to attributes.
-    - `true` = Watch all attributes for changes.
-    - Array = Watch the attributes listed in the array.
-    - String = Watch the attributes listed in the string (comma or space delimited).
-  - `children`
-    - `true` = Watch for nodes being added or removed from this element.
-    - `false` = Do not watch for nodes being added or removed from this element.
-  - `text`
-    - `true` = Watch for the text changes within this element and it's children.
-    - `false` = Do not watch for text changes.
+  - `false` = Do not watch for changes to attributes.
+  - `true` = Watch all attributes for changes.
+  - Array = Watch the attributes listed in the array.
+  - String = Watch the attributes listed in the string (comma or space delimited).
+- `children`
+  - `true` = Watch for child nodes being added or removed from this element.
+  - `false` = Do not watch for child nodes being added or removed from this element.
+- `text`
+  - `true` = Watch for the `innerText` of this element changing.
+  - `false` = Do not watch for text changes.
 
  By default, the `watch` object has all properties set to `true`. Limiting this to only watch for specific changes will greatly increase your page's performance.
 
