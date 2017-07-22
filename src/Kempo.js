@@ -1,4 +1,4 @@
-var El = (function(){
+var Kempo = (function(){
   var customElements = {};
   var bodyObserver = new MutationObserver(function(mutations){
     for(var i=0; i<mutations.length; i++){
@@ -31,7 +31,7 @@ var El = (function(){
   };
   if(document.readyState === 'complete') observeBody();
   else document.addEventListener("DOMContentLoaded", observeBody);
-  return function El(tag, settings){
+  function Kempo(tag, settings){
     this.attached = function($element){
       if(settings.attached) settings.attached.call($element);
       if(settings.changed) watchForChanges($element);
@@ -106,4 +106,8 @@ var El = (function(){
       } catch(err){}
     }
   };
+  Kempo.version = {
+    core: "0.15.1"
+  };
+  return Kempo;
 })();

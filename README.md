@@ -1,13 +1,11 @@
-# El.JS
+# Kempo
 
-> *v 0.1 beta*
-
-![El.JS Logo](docs/ElJS-green.png)
+> *v 0.15.0 beta*
 
 Custom Elements Today.
 
 ```javascript
-El("my-element", {
+Kempo("my-element", {
   attached: function(){
     console.log('A new "my-element" was attached to the DOM.', this);
   },
@@ -34,28 +32,28 @@ For 3+ years we have listened to the "experts" tell us that ES6 is coming... **b
 
 ...Ain't nobody got time for that.
 
-El.JS can be used in all browsers right now, no more waiting.
+**Kempo** can be used in all browsers right now, no more waiting.
 
 ##### Small
 
-Other frameworks that claim to be "small" are around 3-4kb; El.JS is about 1/4th of the size of these "small" frameworks coming in at 804 bytes when compressed and gzipped.
+Other frameworks that claim to be "small" are around 3-4kb; **Kempo** is about 1/4th of the size of these "small" frameworks coming in at 804 bytes when compressed and gzipped.
 
 ### Getting Started
 
 ##### 1. Declare a custom element
 
 ```javascript
-El("my-element", {})
+Kempo("my-element", {})
 ```
 
-Declare a custom element by passing the tag name and options into `El(tag, options)`.
+Declare a custom element by passing the tag name and options into `Kempo(tag, options)`.
 
 _*All `options` are optional_
 
 ##### 2. Create an `attached` method.
 
 ```javascript
-El("my-element", {
+Kempo("my-element", {
   attached: function(){
     // The newly attacked element is the context, aka "this"
     console.log(this);
@@ -68,7 +66,7 @@ When a new `<my-element>` is added to the DOM the `attached` function will be ca
 ##### 3. Create a `changed` method.
 
 ```javascript
-El("my-element", {
+Kempo("my-element", {
   /* ... */
   changed: function(changes){
     // The changed element is the context, aka "this"
@@ -108,7 +106,7 @@ Here is an example of what the `changes` parameter could look like:
 
 ##### 4. Create a `detached` method.
 ```javascript
-El("my-element", {
+Kempo("my-element", {
   /* ... */
   detached: function(){
     // The recently detached element is the context, aka "this"
@@ -122,7 +120,7 @@ When the element is removed from the DOM the `detached` function will be called 
 ##### 5. Tell it what to watch for
 
 ```javascript
-El("my-element", {
+Kempo("my-element", {
   /* ... */
   watch: { // All properties are optional
     attributes: ["class", "info"],

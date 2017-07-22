@@ -1,18 +1,10 @@
 {
-  "name": "eljs",
-  "version": "0.1.1",
+  "name": "kempo",
+  "version": "0.15.0",
   "description": "Custom Elements Today",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs",
-    "example": "examples"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dustinpoissant/ElJS.git"
+    "url": "git+https://github.com/dustinpoissant/Kempo.git"
   },
   "keywords": [
     "custom",
@@ -24,9 +16,9 @@
   "author": "Dustin Poissant",
   "license": "CC-BY-NC-SA-3.0",
   "bugs": {
-    "url": "https://github.com/dustinpoissant/ElJS/issues"
+    "url": "https://github.com/dustinpoissant/Kempo/issues"
   },
-  "homepage": "https://github.com/dustinpoissant/ElJS#readme",
+  "homepage": "https://github.com/dustinpoissant/Kempo#readme",
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",

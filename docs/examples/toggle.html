@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="../El.js"></script>
+  <script src="../Kempo.js"></script>
   <script>
     /* Helper function to convert a string to a boolean */
     function strToBool(str){
@@ -9,7 +9,7 @@
       if(typeof(str) == "boolean") return str;
       return !!(["true", "t", "yes", "y", "on"].indexOf( str.toLowerCase() ) > -1);
     };
-    El("my-toggle", {
+    Kempo("my-toggle", {
       attached: function(){ // "this" is the element that was attached to the DOM
         var disabled = this.getAttribute("disabled");
         if(!disabled && disabled != "") this.setAttribute("tabindex", "0");

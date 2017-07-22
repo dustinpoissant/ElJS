@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src='../El.js'></script>
+  <script src='../Kempo.js'></script>
   <script>
-    El("x-gallery", {
+    Kempo("x-gallery", {
       attached: function(){
         this.sources = [].slice.call(this.querySelectorAll("img")).map(function(el){
           return el.getAttribute("src");
@@ -18,7 +18,6 @@
         }, parseInt(this.getAttribute("timer")) || 5000);
       },
       changed: function(changes){
-        console.log(changes);
         if(changes.children){
           for(var i=0; i<changes.children.added.length; i++){
             this.sources.push(changes.children.added[i].getAttribute("src"));
