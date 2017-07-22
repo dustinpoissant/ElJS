@@ -50,7 +50,7 @@ El("my-element", {})
 
 Declare a custom element by passing the tag name and options into `El(tag, options)`.
 
-* *All `options` are optional*
+_*All `options` are optional_
 
 ##### 2. Create an `attached` method.
 
