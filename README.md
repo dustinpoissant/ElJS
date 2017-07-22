@@ -50,6 +50,8 @@ El("my-element", {})
 
 Declare a custom element by passing the tag name and options into `El(tag, options)`.
 
+* *All `options` are optional*
+
 ##### 2. Create an `attached` method.
 
 ```javascript
@@ -69,15 +71,40 @@ When a new `<my-element>` is added to the DOM the `attached` function will be ca
 El("my-element", {
   /* ... */
   changed: function(changes){
-  	// The changed element is the context, aka "this"
+    // The changed element is the context, aka "this"
     console.log(this);
-    // The first parameter represents the changes that occured
+    // The first parameter is an object that represents the changes that occurred
     console.log(changes);
   }
 })
 ```
 
 When a change is made to the element the `changed` function will be called, the element will become the context and an object representing the changes is passed to `changed` function.
+
+Here is an example of what the `changes` parameter could look like:
+
+```javascript
+{
+  attributes: { // an object containing all attributes that have been changed
+    id: { // This is just an example, it doesn't have to be "id" but can be any attribute
+      value: "TheElementsNewId", // null if the attribute has been removed
+      oldValue: "TheElementsOldId" // null if the attribute did not previously exist
+    },
+    class: {
+      value: "new class list",
+      oldValue: "old class list"
+    }
+  },
+  children: {
+    added: [element, element, element], // An array of elements that were added
+    removed: [element, element, element] // An array of elements that were removed
+  },
+  text: {
+    value: "New text content", // The new "innerText" content
+    oldValue: "Old text content" // The old "innerText" content
+  }
+}
+```
 
 ##### 4. Create a `detached` method.
 ```javascript
