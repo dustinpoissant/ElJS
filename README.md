@@ -24,7 +24,7 @@ El("my-element", {
 
 "Custom Elements are coming, Custom Elements are coming".
 
-For 3+ years we have listened to the "experts" telling us that ES6 is coming... but it's not. Even when ES6 does come... what do we do about old browsers? We will have to:
+For 3+ years we have listened to the "experts" tell us that ES6 is coming... **but it's not**. Even when ES6 does come... what do we do about old browsers? We will have to:
 
 1. Write our fancy code in ES6.
 2. Compile to ES5 using Babel
