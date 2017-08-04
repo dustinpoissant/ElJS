@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gallery - Kempo Example</title>
+  <script src='../Kempo.js'></script>
+  <script>
+    /* Define a new custom element that uses the "my-person" tag */
+    Kempo("my-gallery", {
+      // When a new "my-galery" element is attached to the DOM
+      attached: function(){
+        // Set the inital image to be the first one
+        this.srcIndex = 0;
+
+        // Set the background of this element
+        this.setBG = function(){
+          this.style.backgroundImage = "url("+this.getElementsByTagName("img")[this.srcIndex].src+")";
+          return this; // Allow for chaining
+        };
+
+        // Go to the next image
+        this.next = function(){
+          // Incrament the current image index
+          this.srcIndex++;
+          /*  If the current image index is larger than the list of images
+                go back to the first image */
+          if(this.srcIndex >= this.getElementsByTagName("img").length)
+            this.srcIndex = 0;
+          return this.setBG(); // Set the background and allow for chaining
+        };
+
+        // Go to the previous image
+        this.back = function(){
+          this.srcIndex--; // Decrament the current image index
+          // If the current image index is less than 0 go to the last image
+          if(this.srcIndex < 0)
+            this.srcIndex = this.getElementsByTagName("img").length - 1;
+          return this.setBG(); // Set the background and allow for chaining
+        };
+
+        // A private member to save the interval timer id
+        this._timer = null;
+
+        // Start playing the slideshow
+        this.start = function(){
+          if(!this._timer){ // If the slideshow is not already playing
+            var $gallery = this; // Save the context
+            this._timer = setInterval(function(){ // Set an interval
+              $gallery.next(); // Go to the next image
+            }, parseInt(this.getAttribute("timer")) || 5000);
+            /*  Get the "timer" attribute and use it as the timer between
+                  changes, default to 5000 ms if not set */
+          }
+          return this; // Allow for chaining
+        };
+
+        // Stop playing the slideshow
+        this.stop = function(){
+          clearInterval(this._timer); // Stop the interval timer
+          this._timer = null; // Clear the timer id to idicate it is stopped
+          return this; // Allow for chaining
+        };
+
+        this.setBG(); // Set the first image
+        this.start(); // Auto start playing the slideshow
+      },
+      detached: function(){
+        this.stop(); // Stop the timer
+        // Clear all custom members/methods of this element to free up memory
+        delete this.srcIndex;
+        delete this.setBG;
+        delete this.next;
+        delete this.back;
+        delete this._timer;
+        delete this.start;
+        delete this.stop;
+      },
+      changed: function(changes){
+        /*  If new imgs are added they will automatically be used
+              no need to write extra code to watch for them. */
+        if(changes.attributes && changes.attributes.timer && this._timer){
+          // If the timer is changed, and the gallery is playing, restart it
+          this.stop().start();
+        }
+      },
+      watch: {
+        attributes: ["timer"] // Watch for the "timer" attribute being changed
+      }
+    });
+  </script>
+  <style>
+    body {
+      margin: 0;
+      padding: 16px;
+    }
+    my-gallery {
+      display: block;
+      width: calc(100vmin - 32px);
+      height: calc(100vmin - 32px);
+      max-width: 500px;
+      max-height: 500px;
+      margin: 0;
+      margin-bottom: 16px;
+      background-position: center center;
+      background-size: cover;
+    }
+    my-gallery img {
+      display: none;
+    }
+    input[type="range"] {
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <!-- Create a new "my-gallery" element, set it's timer to 5000ms -->
+  <my-gallery id="myGallery" timer="5000">
+    <img src="img1.jpg" />
+    <img src="img2.jpg" />
+    <img src="img3.jpg" />
+    <img src="img4.jpg" />
+  </my-gallery>
+
+  <!-- Create some controls for the gallery -->
+  <button onclick="document.getElementById('myGallery').back();">Back</button>
+  <button onclick="document.getElementById('myGallery').stop();">Stop</button>
+  <button onclick="document.getElementById('myGallery').start();">Play</button>
+  <button onclick="document.getElementById('myGallery').next();">Next</button>
+  <p></p>
+  <label>Speed:</label>
+  <input type="range" min="1000" max="10000" value="5000" onchange="document.getElementById('myGallery').setAttribute('timer', this.value);" />
+
+  <!-- Allow the user to add new images via their URL -->
+  <form id="new-image-form">
+    <input id="new-image-src" type="URL" placeholder="Image URL"/>
+    <button type="submit">Add Image</button>
+  </form>
+  <script>/* JavaScript code to add the new images to the gallery */
+    document.getElementById("new-image-form").addEventListener("submit", function(evt){
+      // Get the url input element
+      var $src = document.getElementById("new-image-src");
+      if($src.value.length){ // If the URL is not blank
+        var $img = document.createElement("img"); // Create a new <img>
+        $img.src = $src.value; // Set it's source
+        // Add it to the gallery
+        document.getElementById("myGallery").appendChild($img);
+        $src.value = ""; // Clear the URL input
+      }
+      // Stop the form from refreshing the page
+      evt.preventDefault();
+      return false;
+    });
+  </script>
+</body>
+</html>

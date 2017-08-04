@@ -1,8 +1,8 @@
 # Kempo
 
-> *v 0.15.0 beta*
+> *v 0.16.0 beta*
 
-Custom Elements Today.
+A small library that packs a big punch.
 
 ```javascript
 Kempo("my-element", {

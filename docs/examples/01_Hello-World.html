@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hello World - Kempo Example</title>
+  <script src='../Kempo.js'></script>
+  <script>
+    /* Define a new custom element that uses the "hello-world" tag */
+    Kempo("hello-world", {
+      attached: function(){ // When it is attached to the DOM
+        this.innerText = "Hello World"; // Set it's inner text
+      }
+    });
+  </script>
+</head>
+<body>
+  <!-- Create a new instance of this custom "hello-world" element -->
+  <hello-world></hello-world>
+</body>
+</html>
