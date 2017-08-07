@@ -104,7 +104,7 @@ If the change was an attribute change, the "change" object will look like this:
 ```javascript
 {
   attribute: {
-  	name: "class", // The name of the attribute that was changed
+    name: "class", // The name of the attribute that was changed
     oldValue: "myclass1", // The previous attribute value, null = this is a new attribute
     newValue: "myclass2" // The new attribute vlaue, null = this attribute was removed
   }
@@ -116,7 +116,7 @@ If the change was child nodes being added, the "change" object will look like th
 ```javascript
 {
   children: {
-  	added: [element, element, element] // An array of the added child nodes
+    added: [element, element, element] // An array of the added child nodes
   }
 }
 ```
