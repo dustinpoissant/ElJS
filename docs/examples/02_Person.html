@@ -6,8 +6,8 @@
   <script>
     /* Define a new custom element that uses the "my-person" tag */
     Kempo("my-person", {
-      // When a new "my-person" element is attached to the DOM
-      attached: function(){
+      // When a new "my-person" element is added to the DOM
+      added: function(){
         // Say hello to the person in the "name" attribute
         this.innerText = "Hello " + this.getAttribute("name");
       },
@@ -16,9 +16,9 @@
       },
       changed: function(changes){
         // When the name attribute changes
-        if(changes.attributes && changes.attributes.name){
+        if(changes.attribute && changes.attribute.name == "name"){
           // Say hello to the new name
-          this.innerText = "Hello " + changes.attributes.name.value;
+          this.innerText = "Hello " + changes.attribute.newValue;
         }
       }
     });
