@@ -106,7 +106,7 @@ If the change was an attribute change, the "change" object will look like this:
   attribute: {
     name: "class", // The name of the attribute that was changed
     oldValue: "myclass1", // The previous attribute value, null = this is a new attribute
-    newValue: "myclass2" // The new attribute vlaue, null = this attribute was removed
+    newValue: "myclass2" // The new attribute value, null = this attribute was removed
   }
 }
 ```
