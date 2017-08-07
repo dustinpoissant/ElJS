@@ -14,7 +14,7 @@ var Kempo = (function(){
     return Kempo;
   };
   Kempo.version = {
-    core: "0.17.0"
+    core: "0.17.1"
   };
 
   /* Helper Function */
