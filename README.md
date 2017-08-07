@@ -18,6 +18,8 @@ Kempo("my-element", {
 });
 ```
 
+!(Kempo Icon)[docs/Kempo.png]
+
 ### Why use Kempo?
 
 ##### Works Today
