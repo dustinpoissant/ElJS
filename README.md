@@ -18,7 +18,7 @@ Kempo("my-element", {
 });
 ```
 
-!(Kempo Icon)[docs/Kempo.png]
+![Kempo Icon](docs/Kempo.png)
 
 ### Why use Kempo?
 
