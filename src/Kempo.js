@@ -14,14 +14,17 @@ var Kempo = (function(){
     return Kempo;
   };
   Kempo.version = {
-    core: "0.17.1"
+    core: "0.18.0"
   };
 
   /* Helper Function */
-  function nodeList2Array(nl){
+  function getAllChildrenFromNodeList(nl){
     var a = [];
     for(var i=0; i<nl.length; i++){
-      if(nl[i].nodeType != 3) a.push(nl[i]);
+      if(nl[i].nodeType != 3){
+        a.push(nl[i]);
+        a = a.concat( getAllChildrenFromNodeList(nl[i].childNodes) );
+      }
     }
     return a;
   }
@@ -70,14 +73,14 @@ var Kempo = (function(){
             });
           }
           if(options.watch && options.watch.children && m.type == "childList"){
-            if(nodeList2Array(m.addedNodes).length){
+            if(getAllChildrenFromNodeList(m.addedNodes).length){
               options.changed.call(m.target, {
                 children: {
                   added: [].slice.call(m.addedNodes)
                 }
               });
             }
-            if(nodeList2Array(m.removedNodes).length){
+            if(getAllChildrenFromNodeList(m.removedNodes).length){
               options.changed.call(m.target, {
                 children: {
                   removed: [].slice.call(m.removedNodes)
@@ -135,19 +138,25 @@ var Kempo = (function(){
         }
       }
       if(m.type == "childList" && m.addedNodes.length){
-        var an = [].slice.call(m.addedNodes);
-        for(var a=0; a<an.length; a++){
-          if(an[a].nodeType == 3) continue;
+        var an = getAllChildrenFromNodeList(m.addedNodes);
+        for(var a in an){
           var ce = cer[an[a].tagName.toLowerCase()];
           if(ce){
             ce.added(an[a]);
           }
+          for(var attr in car){
+            if(an[a].getAttribute(attr) !== null){
+              var ca = car[attr];
+              if(ca){
+                ca.added(an[a], attr, an[a].getAttribute(attr));
+              }
+            }
+          }
         }
       }
       if(m.type == "childList" && m.removedNodes.length){
-        var rn = [].slice.call(m.removedNodes);
-        for(var r=0; r<rn.length; r++){
-          if(rn[r].nodeType == 3) continue;
+        var rn = getAllChildrenFromNodeList(m.removedNodes);
+        for(var r in rn){
           var ce = cer[rn[r].tagName.toLowerCase()];
           if(ce){
             ce.removed(rn[r]);
