@@ -14,7 +14,7 @@ var Kempo = (function(){
     return Kempo;
   };
   Kempo.version = {
-    core: "0.18.0"
+    core: "0.18.1"
   };
 
   /* Helper Function */
@@ -157,9 +157,11 @@ var Kempo = (function(){
       if(m.type == "childList" && m.removedNodes.length){
         var rn = getAllChildrenFromNodeList(m.removedNodes);
         for(var r in rn){
-          var ce = cer[rn[r].tagName.toLowerCase()];
-          if(ce){
-            ce.removed(rn[r]);
+          if(!document.body.contains(rn[r])){// Make sure it is actually removed
+            var ce = cer[rn[r].tagName.toLowerCase()];
+            if(ce){
+              ce.removed(rn[r]);
+            }
           }
         }
       }

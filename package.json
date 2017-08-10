@@ -1,7 +1,7 @@
 {
   "name": "kempo",
-  "version": "0.18.0",
-  "description": "Custom Elements Today",
+  "version": "0.18.1",
+  "description": "A small library that packs a big punch",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dustinpoissant/Kempo.git"
