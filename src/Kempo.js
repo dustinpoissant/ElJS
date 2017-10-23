@@ -21,7 +21,7 @@ var Kempo = (function(){
   function getAllChildrenFromNodeList(nl){
     var a = [];
     for(var i=0; i<nl.length; i++){
-      if(nl[i].nodeType != 3){
+      if([3,7,8,10].indexOf(nl[i].nodeType) == -1){
         a.push(nl[i]);
         a = a.concat( getAllChildrenFromNodeList(nl[i].childNodes) );
       }
