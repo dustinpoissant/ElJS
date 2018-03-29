@@ -1,6 +1,6 @@
 # Kempo
 
-> *v 0.18 beta*
+> *v 0.19 beta*
 
 A small library that packs a big punch.
 

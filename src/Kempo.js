@@ -1,21 +1,42 @@
+/* A single global variable named "Kempo" is exposed from the closure */
 var Kempo = (function(){
+  /*
+    The main function that will be the entry point to all features of the library
+  */
   var Kempo = function(arg1, arg2){
-    if(typeof(arg1) == "function"){
+    if(arg1 instanceof Array){
+      for(var i=0; i<arg1.length; i++){
+        Kempo(arg1[i], arg2);
+      }
+      return Kempo;
+    } else if(typeof(arg1) == "function"){
       if(document.readyState == "complete") arg1();
       else document.addEventListener("DOMContentLoaded", arg1);
-    } else if(arg1[0] == "[" && arg1[arg1.length-1] == "]"){
-      var attribute = arg1.substr(1, arg1.length-2);
-      caa.push(attribute);
-      car[attribute] = new KempoCustomAttribute(arg1, arg2);
-      startObservingBody();
-    } else {
-      cer[arg1] = new KempoCustomElement(arg1, arg2);
+    } else if(typeof(arg1) == "string"){
+      if(arg1[0] == "[" && arg1[arg1.length-1] == "]"){
+        var attribute = arg1.substr(1, arg1.length-2);
+        caa.push(attribute);
+        car[attribute] = new KempoCustomAttribute(arg1, arg2);
+        startObservingBody();
+      } else {
+        cer[arg1] = new KempoCustomElement(arg1, arg2);
+      }
     }
     return Kempo;
   };
-  Kempo.version = {
-    core: "0.18.2"
-  };
+  
+  /*
+    Attach a variable to the library indicating its version, this will also hold the versions of all sub-modules
+  */
+  Kempo.version = {};
+  Object.defineProperty(Kempo.version, "core", {
+    get: function(){
+      return '0.19.0';
+    },
+    set: function(){}, // read only
+    enumerable: true, // can be enumerated
+    configurable: false // can not be deleted/modified
+  });
 
   /* Helper Function */
   function getAllChildrenFromNodeList(nl){
