@@ -1,230 +1,208 @@
-/* A single global variable named "Kempo" is exposed from the closure */
 var Kempo = (function(){
   /*
-    The main function that will be the entry point to all features of the library
+    Closure Scoped Variables
   */
-  var Kempo = function(arg1, arg2){
-    if(arg1 instanceof Array){
-      for(var i=0; i<arg1.length; i++){
-        Kempo(arg1[i], arg2);
-      }
-      return Kempo;
-    } else if(typeof(arg1) == "function"){
-      if(document.readyState == "complete") arg1();
-      else document.addEventListener("DOMContentLoaded", arg1);
-    } else if(typeof(arg1) == "string"){
-      if(arg1[0] == "[" && arg1[arg1.length-1] == "]"){
-        var attribute = arg1.substr(1, arg1.length-2);
-        caa.push(attribute);
-        car[attribute] = new KempoCustomAttribute(arg1, arg2);
-        startObservingBody();
-      } else {
-        cer[arg1] = new KempoCustomElement(arg1, arg2);
-      }
-    }
-    return Kempo;
-  };
-  
+  var version = "0.20.0",
+      eo = {}, // Element Observers
+      ao = {}, // Attribute Observers
+      co = {}; // Class Observers
+
   /*
-    Attach a variable to the library indicating its version, this will also hold the versions of all sub-modules
+    Closure Scoped Functions
   */
+  function arrayDiff(a, b){
+    var d = [];
+    for(var i=0; i<a.length; i++) if(b.indexOf(a[i]) == -1) d.push(a[i]);
+    return d;
+  };
+  function concatChildren($elements){
+    var children = [];
+    for(var i=0; i<$elements.length; i++)(function($el){
+      if(!($el instanceof HTMLElement)) return;
+      children.push($el);
+      children = children.concat(concatChildren($el.children));
+    })($elements[i]);
+    return children;
+  };
+  function onDOMReady(handler){
+    if(document.readyState == 'complete' || document.readyState == 'interactive'){
+      handler.call(window);
+    } else {
+      document.addEventListener('DOMContentLoaded', function(){
+        handler.call(window);
+      });
+    }
+  };
+  function addElementObserver(tagName, options){
+    var tagName = tagName.trim().toLowerCase();
+    if(!eo[tagName]) eo[tagName] = [];
+    if(!options.added) options.added = function(){};
+    if(!options.removed) options.removed = function(){};
+    eo[tagName].push(options);
+  };
+  function addAttributeObserver(attrName, options){
+    var attrName = attrName.trim().toLowerCase();
+    if(!ao[attrName]) ao[attrName] = [];
+    if(!options.added) options.added = function(){};
+    if(!options.changed) options.changed = function(){};
+    if(!options.removed) options.removed = function(){};
+    ao[attrName].push(options);
+  };
+  function addClassObserver(className, options){
+    if(!co[className]) co[className] = [];
+    if(!options.added) options.added = function(){};
+    if(!options.removed) options.removed = function(){};
+    co[className].push(options);
+  };
+
+  /*
+    Add a Attribute Observer for Classes
+  */
+  ao.class = [{
+    added: function(attrName, val){
+      var $el = this;
+      var classNames = val.split(" ");
+      for(var i=0; i<classNames.length; i++)(function(className){
+        if(co[className]) for(var i=0; i<co[className].length; i++)(function(observer){
+          observer.added.call($el, className);
+        })(co[className][i]);
+      })(classNames[i]);
+    },
+    changed: function(attrName, newVal, oldVal){
+      var $el = this;
+      var newClassNames = newVal.split(" ");
+      var oldClassNames = oldVal.split(" ");
+      var addedClassNames = arrayDiff(newClassNames, oldClassNames);
+      for(var i=0; i<addedClassNames.length; i++)(function(className){
+        if(co[className])for(var i=0; i<co[className].length; i++)(function(observer){
+          observer.added.call($el, className);
+        })(co[className][i]);
+      })(addedClassNames[i]);
+      var removedClassNames = arrayDiff(oldClassNames, newClassNames);
+      for(var i=0; i<removedClassNames.length; i++)(function(className){
+        if(co[className])for(var i=0; i<co[className].length; i++)(function(observer){
+          observer.removed.call($el, className);
+        })(co[className][i]);
+      })(removedClassNames[i]);
+    },
+    removed: function(attrName, val){
+      var $el = this;
+      var classNames = val.split(" ");
+      for(var i=0; i<classNames.length; i++)(function(className){
+        if(co[className]) for(var i=0; i<co[className].length; i++)(function(observer){
+          observer.removed.call($el, className);
+        })(co[className][i]);
+      })(classNames[i]);
+    }
+  }];
+
+
+  /*
+    Initialize Elements / Attributes / Classes
+  */
+  onDOMReady(function(){
+    /* Initialize Elements */
+    for(var tagName in eo)(function(tagName, observers){
+      var $els = document.querySelectorAll(tagName);
+      for(var i=0; i<$els.length; i++)(function($el){
+        for(var i=0; i<observers.length; i++)(function(observer){
+          observer.added.call($el, tagName);
+        })(observers[i]);
+      })($els[i]);
+    })(tagName, eo[tagName]);
+
+    /* Initialize Attriutes */
+    for(var attrName in ao)(function(attrName, observers){
+      var $els = document.querySelectorAll("["+attrName+"]");
+      for(var i=0; i<$els.length; i++)(function($el){
+        for(var i=0; i<observers.length; i++)(function(observer){
+          observer.added.call($el, attrName, $el.getAttribute(attrName), null);
+        })(observers[i]);
+      })($els[i]);
+    })(attrName, ao[attrName]);
+  });
+  /*
+    Body MutationObserver
+  */
+  onDOMReady(function(){
+    new MutationObserver(function(mutations){
+      for(var i=0; i<mutations.length; i++) (function(mutation){
+        if(mutation.type == "childList"){
+          // Handle Added Elements
+          var addedElements = concatChildren(mutation.addedNodes);
+          for(var i=0; i<addedElements.length; i++) (function($el){
+            var tagName = $el.tagName.trim().toLowerCase();
+            if(eo[tagName]) for(var i=0; i<eo[tagName].length; i++) (function(o){
+              o.added.call($el);
+            })(eo[tagName][i]);
+            for(var attrName in ao)(function(attrName, observers){
+              var v = $el.getAttribute(attrName);
+              if(v){
+                for(var i=0; i<observers.length; i++)(function(observer){
+                  observer.added.call($el, attrName, v);
+                })(observers[i]);
+              }
+            })(attrName, ao[attrName]);
+          })(addedElements[i]);
+          // Handle Removed Elements
+          var removedElements = concatChildren(mutation.removedNodes);
+          for(var i=0; i<removedElements.length; i++) (function($el){
+            var tagName = $el.tagName.trim().toLowerCase();
+            if(eo[tagName]) for(var i=0; i<eo[tagName].length; i++) (function(o){
+              o.removed.call($el);
+            })(eo[tagName][i]);
+            for(var attrName in ao)(function(attrName, observers){
+              var v = $el.getAttribute(attrName);
+              if(v){
+                for(var i=0; i<observers.length; i++)(function(observer){
+                  observer.removed.call($el, attrName, v);
+                })(observers[i]);
+              }
+            })(attrName, ao[attrName]);
+          })(removedElements[i]);
+        } else if(mutation.type == "attributes"){
+          var attrName = mutation.attributeName.trim().toLowerCase();
+          if(ao[attrName]){
+            var $el = mutation.target;
+            var oldValue = mutation.oldValue;
+            var newValue = $el.getAttribute(attrName);
+            for(var i=0; i<ao[attrName].length; i++)(function(observer){
+              if(newValue && !oldValue) observer.added.call($el, attrName, newValue);
+              else if(!newValue && oldValue) observer.removed.call($el, attrName, oldValue);
+              else if(newValue && oldValue) observer.changed.call($el, attrName, newValue, oldValue);
+            })(ao[attrName][i]);
+          }
+        }
+      })(mutations[i]);
+    }).observe(document.body, {
+      childList: true,
+      attributes: true,
+      attributeOldValue: true,
+      subtree: true
+    });
+  });
+
+  function Kempo(arg1, arg2){
+    if(typeof(arg1) == "function"){
+      onDOMReady(arg1);
+    } else if(typeof(arg1) == "string"){
+      arg1.split(",").forEach(function(selector){
+        var selector = selector.trim();
+        if(selector[0] == ".")
+          addClassObserver(selector.substr(1), arg2);
+        else if(selector[0] == "[" && selector[selector.length-1] == "]")
+          addAttributeObserver(selector.substr(1, selector.length-2), arg2);
+        else
+          addElementObserver(selector, arg2);
+      });
+    }
+  };
   Kempo.version = {};
   Object.defineProperty(Kempo.version, "core", {
     get: function(){
-      return '0.19.0';
+      return version;
     },
-    set: function(){}, // read only
-    enumerable: true, // can be enumerated
-    configurable: false // can not be deleted/modified
+    enumerable: true
   });
-
-  /* Helper Function */
-  function getAllChildrenFromNodeList(nl){
-    var a = [];
-    for(var i=0; i<nl.length; i++){
-      if([3,7,8,10].indexOf(nl[i].nodeType) == -1){
-        a.push(nl[i]);
-        a = a.concat( getAllChildrenFromNodeList(nl[i].childNodes) );
-      }
-    }
-    return a;
-  }
-
-  /* Custom Element Prototype */
-  var KempoCustomElement = function(tag, options){
-    this.added = function($element, attr, newVal){
-      if(options.added) options.added.call($element, attr, newVal);
-      if(options.changed && options.watch) watchForChanges($element);
-    };
-    this.removed = function($element, attr){
-      if(options.removed) options.removed.call($element);
-      if($element.observer){
-        $element.observer.disconnect();
-        delete $element.observer;
-      }
-    };
-    function watchForChanges($element){
-      var config = {};
-      if(options.watch.attributes){
-        config.attributes = true;
-        config.attributeOldValue = true;
-        if(options.watch.attributes instanceof Array)
-          config.attributeFilter = options.watch.attributes;
-      }
-      if(options.watch.children){
-        config.childList = true;
-        config.subtree = true;
-      }
-      if(options.watch.text){
-        config.childList = true;
-        config.subtree = true;
-        config.characterData = true;
-        $element._oldInnerText = $element.innerText;
-      }
-      $element.observer = new MutationObserver(function(mutations){
-        for(var i=0; i<mutations.length; i++){
-          var m = mutations[i];
-          if(options.watch && options.watch.attributes && m.type == "attributes"){
-            options.changed.call(m.target, {
-              attribute: {
-                name: m.attributeName,
-                oldValue: m.oldValue,
-                newValue: m.target.getAttribute(m.attributeName)
-              }
-            });
-          }
-          if(options.watch && options.watch.children && m.type == "childList"){
-            if(getAllChildrenFromNodeList(m.addedNodes).length){
-              options.changed.call(m.target, {
-                children: {
-                  added: [].slice.call(m.addedNodes)
-                }
-              });
-            }
-            if(getAllChildrenFromNodeList(m.removedNodes).length){
-              options.changed.call(m.target, {
-                children: {
-                  removed: [].slice.call(m.removedNodes)
-                }
-              });
-            }
-          }
-          if(options.watch && options.watch.text && m.target._oldInnerText != m.target.innerText){
-            options.changed.call(m.target, {
-              text: {
-                oldValue: m.target._oldInnerText,
-                newValue: m.target.innerText
-              }
-            });
-            m.target._oldInnerText = m.target.innerText;
-          }
-        }
-      });
-      $element.observer.observe($element, config);
-    };
-  };
-
-  /* Custom Attribute Prototype */
-  var KempoCustomAttribute = function(attribute, options){
-    this.added = function($element, attr, newVal){
-      if(options.added) options.added.call($element, attr, newVal);
-    };
-    this.removed = function($element, attr, oldVal){
-      if(options.removed) options.removed.call($element, attr, oldVal);
-    };
-    this.changed = function($element, attr, oldVal, newVal){
-      if(options.changed) options.changed.call($element, attr, oldVal, newVal);
-    };
-  };
-
-  var cer = {}; // Custom Element Registry
-  var car = {}; // Custom Attribute Registry
-  var caa = []; // Custom Attribute Array
-
-  var bodyObserver = new MutationObserver(function(mutations){
-    for(var i=0; i<mutations.length; i++){
-      var m = mutations[i];
-      if(m.type == "attributes"){
-        var attr = m.attributeName;
-        var ca = car[attr];
-        if(ca){
-          var newVal = m.target.getAttribute(m.attributeName);
-          if(m.attributeOldValue === null){
-            ca.added(m.target, attr, newVal);
-          } else if(newVal === null){
-            ca.removed(m.target, attr, m.oldValue);
-          } else {
-            ca.changed(m.target, attr, m.oldValue, newVal);
-          }
-        }
-      }
-      if(m.type == "childList" && m.addedNodes.length){
-        var an = getAllChildrenFromNodeList(m.addedNodes);
-        for(var a in an){
-          var ce = cer[an[a].tagName.toLowerCase()];
-          if(ce){
-            ce.added(an[a]);
-          }
-          for(var attr in car){
-            if(an[a].getAttribute(attr) !== null){
-              var ca = car[attr];
-              if(ca){
-                ca.added(an[a], attr, an[a].getAttribute(attr));
-              }
-            }
-          }
-        }
-      }
-      if(m.type == "childList" && m.removedNodes.length){
-        var rn = getAllChildrenFromNodeList(m.removedNodes);
-        for(var r in rn){
-          if(!document.body.contains(rn[r])){// Make sure it is actually removed
-            var ce = cer[rn[r].tagName.toLowerCase()];
-            if(ce){
-              ce.removed(rn[r]);
-            }
-          }
-        }
-      }
-    }
-  });
-  function getBodyObserverConfig(){
-    var bodyObserverConfig = {
-      subtree: true,
-      childList: true
-    };
-    if(caa.length){
-      bodyObserverConfig.attributes = true;
-      bodyObserverConfig.attributeOldValue = true;
-      bodyObserverConfig.attributeFilter = caa;
-    }
-    return bodyObserverConfig;
-  };
-  function startObservingBody(){
-    function observeBody(){
-      if(startObservingBody.first){
-        for(var tag in cer){
-          var $ce = document.getElementsByTagName(tag);
-          for(var i=0; i<$ce.length; i++){
-            cer[tag].added($ce[i]);
-          }
-        }
-        for(var attr in  car){
-          // Custom Attribute Element
-          var $cae = document.querySelectorAll("["+attr+"]");
-          for(var i=0; i<$cae.length; i++){
-            car[attr].added($cae[i], attr, $cae[i].getAttribute(attr));
-          }
-        }
-        startObservingBody.first = false;
-      }
-      bodyObserver.disconnect();
-      bodyObserver.observe(document.body, getBodyObserverConfig());
-    }
-    if(document.readyState == "complete") observeBody();
-    else document.addEventListener("DOMContentLoaded", observeBody);
-  };
-  startObservingBody.first = true;
-  startObservingBody();
   return Kempo;
 })();
